@@ -1,7 +1,7 @@
 const { WebSocketServer } = require('ws');
 const { createWebSocketStream } = require('ws');
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: 8080, host: '192.168.1.9' });
 
 console.log('WebSocket server started on port 8080');
 
@@ -17,7 +17,7 @@ wss.on('connection', (ws) => {
   duplex.pipe(duplex);
 
   duplex.on('error', console.error);
-  
+
   ws.on('close', () => {
     console.log('Client disconnected');
   });

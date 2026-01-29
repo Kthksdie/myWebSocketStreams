@@ -4,13 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-interface Message {
+interface ChatMessage {
   timestamp: number;
   message: string;
 }
 
 function App() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [status, setStatus] = useState<'disconnected' | 'connecting' | 'connected'>('disconnected');
   const wsRef = useRef<any>(null); // WebSocketStream instance
@@ -39,17 +39,18 @@ function App() {
       }
 
       // @ts-ignore
-      const wss = new WebSocketStream('ws://localhost:8080');
+      const wss = new WebSocketStream('ws://192.168.1.9:8080');
       wsRef.current = wss;
 
-      const { readable, writable } = await wss.connection;
+      const { readable, writable } = await wss.opened;
       setStatus('connected');
 
       writerRef.current = writable.getWriter();
       readerRef.current = readable.getReader();
 
       readMessages(); // Start reading loop
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Connection failed:", error);
       setStatus('disconnected');
     }
@@ -86,7 +87,7 @@ function App() {
   const sendMessage = async () => {
     if (!inputValue.trim() || !writerRef.current) return;
 
-    const msg: Message = {
+    const msg: ChatMessage = {
       timestamp: Date.now(),
       message: inputValue.trim()
     };
